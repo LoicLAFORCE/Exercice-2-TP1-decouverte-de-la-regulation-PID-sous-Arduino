@@ -1,0 +1,36 @@
+Question 2:
+
+#include <PID_v1.h> // Inclusion de la bibliothèque PID pour le contrôle PID
+
+#define PIN_INPUT A5 // Définition de la broche de la photorésistance comme une entrée
+#define PIN_OUTPUT 11 // Définition de la broche de la LED comme une sortie
+#define PIN_POT A0 // Définition de la broche du potentiomètre
+
+double Setpoint, Input, Output; // Définition des variables auxquelles nous allons nous connecter
+double PotentiometerValue; // Ajout d'une variable pour stocker la valeur du potentiomètre
+
+// Spécification des liens et des paramètres de réglage initiaux du PID
+double Kp = 0, Ki = 10, Kd = 0; // Paramètres du PID (proportionnel, intégral, dérivé)
+PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT); // Initialisation du PID
+
+void setup()
+{
+  Input = analogRead(PIN_INPUT); // Initialisation de la variable "Input" avec la valeur lue de la photorésistance
+
+  myPID.SetMode(AUTOMATIC); // Activation du mode de contrôle automatique du PID
+}
+
+void loop()
+{
+  PotentiometerValue = analogRead(PIN_POT); // Lecture de la valeur du potentiomètre
+  PotentiometerValue = PotentiometerValue / 4; // Redimensionnement de la valeur lue du potentiomètre
+
+  Setpoint = PotentiometerValue; // Définition de la sensibilité de la photorésistance en fonction de la valeur du potentiomètre
+  Input = analogRead(PIN_INPUT); // Lecture de la valeur de la photorésistance dans la variable "Input"
+
+  myPID.Compute(); // Calcul de la sortie du PID en fonction des valeurs d'entrée
+
+  // Conversion de la sortie PID à une valeur utilisable pour la LED (de 0 à 255)
+  int outputMapped = map(Output, 0, 255, 0, 1023);
+  analogWrite(PIN_OUTPUT, outputMapped); // Contrôle de la luminosité de la LED en fonction de la sortie du PID
+}
