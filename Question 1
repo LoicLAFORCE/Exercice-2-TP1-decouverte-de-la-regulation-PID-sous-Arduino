@@ -1,0 +1,31 @@
+Question 1:
+
+#include <PID_v1.h> //Inclusion de la bibliothèque PID pour le contrôle PID
+
+#define PIN_INPUT 5 //On défini la broche du potentiomètre comme une entrée
+#define PIN_OUTPUT 11 //On défini la broche de la LED comme une sortie
+
+//Définition des variables auxquelles nous allons nous connecter : 
+double Setpoint, Input, Output;
+
+//Spécification des lien et des paramètres de réglage initiaux:
+double Kp=0, Ki=10, Kd=0;
+PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT); //Initialisation du PID
+
+void setup()
+{
+  //Initialisation des variables auxquelles nous sommes liées : 
+  Input = analogRead(PIN_INPUT);
+
+  //Allumer le PID
+  myPID.SetMode(AUTOMATIC);
+  Setpoint = 10;
+}
+
+void loop()
+{
+  Input = analogRead(PIN_INPUT); //Lecture de la valeur actuelle du potentiomètre dans la variable "Input"
+  myPID.Compute(); //Calcul de la sortie du PID en fonction des valeurs d'entrées
+  
+  analogWrite(PIN_OUTPUT, Output); // Réglage de la luinosité de la LED en fonction de la sortie du PID
+}
